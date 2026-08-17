@@ -3,7 +3,11 @@ const EXERCISE_LIBRARY = [
   "Jumping Jacks", "Wall Sit", "Push Ups", "Abdominal Crunches", "Step Ups",
   "Squats", "Triceps Dips", "Plank", "High Knees", "Lunges",
   "Burpees", "Skipping", "Mountain Climbers", "Jump Squats", "Skater Jumps",
-  "Butt Kicks", "Plank Jacks", "Fast Feet"
+  "Butt Kicks", "Plank Jacks", "Fast Feet",
+  "Push-up + Rotation", "Side Plank — Left", "Side Plank — Right",
+  "Fast Feet", "Plank Jacks", "Butt Kicks", "Squat Thrusts",
+  "Pike Push-ups", "Lateral Raises", "Prone Y-Raises", "Prone T-Raises",
+  "Plank Shoulder Taps"
 ];
 // dedupe (High Knees appears in both lists)
 const EXERCISES = [...new Set(EXERCISE_LIBRARY)];
