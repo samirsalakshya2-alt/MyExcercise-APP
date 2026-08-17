@@ -281,6 +281,30 @@ let stepIndex = 0;
 let remaining = 0;
 let intervalId = null;
 let paused = false;
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if (!("wakeLock" in navigator)) return;
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+  } catch (e) {
+    wakeLock = null;
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release().catch(() => {});
+    wakeLock = null;
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && !paused &&
+      !document.getElementById("screen-timer").classList.contains("hidden")) {
+    requestWakeLock();
+  }
+});
 
 function speak(text) {
   if (!("speechSynthesis" in window)) return;
@@ -300,6 +324,7 @@ function startWorkout() {
   timeline = buildTimeline();
   stepIndex = 0;
   showScreen("timer");
+  requestWakeLock();
   runStep();
 }
 
@@ -309,6 +334,7 @@ function runStep() {
 
   if (step.type === "complete") {
     clearInterval(intervalId);
+    releaseWakeLock();
     speak("Workout complete. Great job!");
     showScreen("complete");
     return;
@@ -382,7 +408,12 @@ function tick() {
 document.getElementById("btn-pause").addEventListener("click", () => {
   paused = !paused;
   document.getElementById("btn-pause").textContent = paused ? "Resume" : "Pause";
-  if (paused) window.speechSynthesis.cancel();
+  if (paused) {
+    window.speechSynthesis.cancel();
+    releaseWakeLock();
+  } else {
+    requestWakeLock();
+  }
 });
 
 document.getElementById("btn-skip").addEventListener("click", () => {
@@ -394,6 +425,7 @@ document.getElementById("btn-skip").addEventListener("click", () => {
 document.getElementById("btn-exit").addEventListener("click", () => {
   clearInterval(intervalId);
   window.speechSynthesis.cancel();
+  releaseWakeLock();
   showScreen("builder");
 });
 
