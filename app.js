@@ -282,6 +282,7 @@ let remaining = 0;
 let intervalId = null;
 let paused = false;
 let wakeLock = null;
+let halfwayAnnounced = false;
 
 async function requestWakeLock() {
   if (!("wakeLock" in navigator)) return;
@@ -342,6 +343,7 @@ function runStep() {
 
   remaining = step.duration;
   paused = false;
+  halfwayAnnounced = false;
   document.getElementById("btn-pause").textContent = "Pause";
   updateTimerDisplay(step);
   announceStep(step);
@@ -398,6 +400,22 @@ function tick() {
   if (paused) return;
   remaining--;
   document.getElementById("timer-clock").textContent = formatTime(remaining);
+
+  const step = timeline[stepIndex];
+  if (step && step.type === "exercise") {
+    const halfway = Math.floor(step.duration / 2);
+    if (!halfwayAnnounced && halfway > 0 && remaining === halfway) {
+      halfwayAnnounced = true;
+      speak("Halfway");
+    } else if (remaining === 3) {
+      speak("Three");
+    } else if (remaining === 2) {
+      speak("Two");
+    } else if (remaining === 1) {
+      speak("One");
+    }
+  }
+
   if (remaining <= 0) {
     clearInterval(intervalId);
     stepIndex++;
