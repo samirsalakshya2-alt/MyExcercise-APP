@@ -353,7 +353,10 @@ function runStep() {
 }
 
 function announceStep(step) {
-  if (step.type === "prep") speak("Get ready");
+  if (step.type === "prep") {
+    const firstExercise = timeline.find(s => s.type === "exercise");
+    speak(firstExercise ? `Get ready. ${firstExercise.name}` : "Get ready");
+  }
   else if (step.type === "exercise") speak(step.name);
   else if (step.type === "rest") speak(step.nextName ? `Rest. Next, ${step.nextName}` : "Rest");
   else if (step.type === "setrest") speak(`Set complete. Rest.`);
@@ -408,6 +411,14 @@ function tick() {
       halfwayAnnounced = true;
       speak("Halfway");
     } else if (remaining === 3) {
+      speak("Three");
+    } else if (remaining === 2) {
+      speak("Two");
+    } else if (remaining === 1) {
+      speak("One");
+    }
+  } else if (step && (step.type === "prep" || step.type === "rest" || step.type === "setrest" || step.type === "settransition")) {
+    if (remaining === 3) {
       speak("Three");
     } else if (remaining === 2) {
       speak("Two");
