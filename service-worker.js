@@ -1,4 +1,4 @@
-const CACHE_NAME = "exercise-timer-v2";
+const CACHE_NAME = "exercise-timer-v3";
 const APP_FILES = [
   "./",
   "./index.html",
